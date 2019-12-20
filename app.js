@@ -10,7 +10,7 @@ const mongoose = require("./config/database");
 const cookieParser = require("cookie-parser");
 var jwt = require("jsonwebtoken");
 
-port = 8000;
+port = process.env.PORT || 3000;
 const app = express();
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
@@ -35,8 +35,8 @@ app.use(
 );
 app.use(bodyParser.json());
 
-app.get("/", function(req, res) {
-  jwt.verify(req.cookies.token, req.app.get("secret_key"), function(
+app.get("/", function (req, res) {
+  jwt.verify(req.cookies.token, req.app.get("secret_key"), function (
     err,
     decoded
   ) {
@@ -58,12 +58,12 @@ app.use("/api/courses", validateApiUser, coursesAPI);
 app.use("/users", usersUI);
 app.use("/courses", validateUIUser, coursesUI);
 
-app.get("/favicon.ico", function(req, res) {
+app.get("/favicon.ico", function (req, res) {
   res.sendStatus(204);
 });
 
 function validateUIUser(req, res, next) {
-  jwt.verify(req.cookies.token, req.app.get("secret_key"), function(
+  jwt.verify(req.cookies.token, req.app.get("secret_key"), function (
     err,
     decoded
   ) {
@@ -81,7 +81,7 @@ function validateUIUser(req, res, next) {
 }
 
 function validateApiUser(req, res, next) {
-  jwt.verify(req.headers["x-access-token"], req.app.get("secret_key"), function(
+  jwt.verify(req.headers["x-access-token"], req.app.get("secret_key"), function (
     err,
     decoded
   ) {
@@ -98,13 +98,13 @@ function validateApiUser(req, res, next) {
   });
 }
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   let err = new Error("Not Found");
   err.status = 404;
   next(err);
 });
 
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   console.log(err);
 
   if (err.status === 404)
@@ -117,6 +117,6 @@ app.use(function(err, req, res, next) {
     });
 });
 
-app.listen(port, function() {
-  console.log("Server listening on port 3000;");
+app.listen(port, function () {
+  console.log(`Server listening on port ${port}`);
 });
