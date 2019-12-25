@@ -4,7 +4,8 @@ const jwt = require("jsonwebtoken");
 module.exports = {
   create: function (req, res, next) {
     if (req.body.name && req.body.password && req.body.email) {
-      userModel.create({
+      if (req.body.name !== "admin") {
+        userModel.create({
           name: req.body.name,
           email: req.body.email,
           password: req.body.password
@@ -26,12 +27,19 @@ module.exports = {
         }
       );
     } else {
+      res.render("login", {
+        message: {
+          error: "You can't use admin, sorry!"
+        }
+      })
+    } 
+  } else {
       res.render("register", {
         message: {
           error: 'Check form data!'
         }
       });
-    }
+  }   
   },
   authenticate: function (req, res, next) {
     if (req.body.name && req.body.password) {
